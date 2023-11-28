@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  db:
+    container_name: ${DB_CONTAINER_NAME}
+    image: ${DB_IMAGE}
+    restart: ${DB_RESTART}
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+    ports:
+      - ${DB_PORTS}
+    volumes:
+      - ${POSTGRES_VOLUME}
+  pgadmin:
+    container_name: ${PGADMIN_CONTAINER_NAME}
+    image: ${PGADMIN_IMAGE}
+    restart: ${PGADMIN_RESTART}
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    ports:
+      - ${PGADMIN_PORTS}
+    volumes:
+      - ${PGADMIN_VOLUME}
+volumes:
+  postgres_data:
+  pgadmin_data:
