@@ -6,7 +6,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/User.entity';
-import * as bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { MoreThan, Repository } from 'typeorm';
 import { SignupDto } from './auth.dto';
 import { Role } from 'src/entities/Role.entity';
@@ -50,7 +50,7 @@ export class AuthService {
     if (!user) {
       return { success: false, message: 'Email not found' };
     }
-    const password = await bcrypt.compare(pass, user.password);
+    const password = await bcrypt.compareSync(pass, user.password);
     if (!password) return { success: false, message: 'Invalid Credentials' };
     const payload = {
       sub: user.id,
@@ -75,7 +75,7 @@ export class AuthService {
   async signup(userInfo: SignupDto) {
     const data = await this.roleRepository.findOneBy({ title: 'user' });
     const { password } = userInfo;
-    const hashedPassword = await bcrypt.hash(password, this.saltRounds);
+    const hashedPassword = await bcrypt.hashSync(password, this.saltRounds);
     userInfo['active'] = false;
     userInfo['role'] = data.id;
     userInfo.password = hashedPassword;
@@ -102,7 +102,7 @@ export class AuthService {
     }
     const payload = { sub: user.id, email: user.email };
     const token = await this.jwtService.signAsync(payload);
-    const hashedToken = await bcrypt.hash(token, 10);
+    const hashedToken = await bcrypt.hashSync(token, 10);
     const currentDate = new Date();
     try {
       const newToken = new UserToken();
@@ -134,7 +134,7 @@ export class AuthService {
     newPassword: password,
     token,
   }: VerifyResetPasswordDto): Promise<UpdateUserDto> {
-    const hashedPassword = await bcrypt.hash(password, this.saltRounds);
+    const hashedPassword = await bcrypt.hashSync(password, this.saltRounds);
     const userToken = await this.userTokenRepository.findOne({
       where: { forgotPasswordToken: token },
       relations: ['user'],
